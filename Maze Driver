@@ -1,0 +1,6 @@
+public class MazeDriver{
+  public static void main(String[] args){
+    Maze run = new Maze();
+    run.createMaze();
+  }
+}
