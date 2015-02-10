@@ -1,0 +1,190 @@
+import java.util.Scanner;
+public class Maze{
+  public int positionX;
+  public int positionY;
+  static int exitX = 1;
+  static int exitY = 2;
+  static String initialPosition = " @";
+  static String backTracker = " #";
+  static String path = " ~";
+  static String space = "  ";
+  static String wall = " *";
+  static boolean check = false;
+  Scanner input = new Scanner(System.in);
+  
+  //Creates a maze by manually creating a maze
+  public void createMaze(){
+    String[][] maze =
+    {{"*","*"," *"," *"," *"," *"," *"," *"," *"," *"},
+     {"*","*","  "," *"," *"," *"," *"," *"," *"," *"},
+     {"*","*","  ","  ","  ","  ","  ","  "," *"," *"},
+     {"*","*","  "," *"," *"," *"," *"," *","  "," *"},
+     {"*","*","  "," *","  "," *","  ","  ","  "," *"},
+     {"*","*","  "," *","  "," *","  "," *"," *"," *"},
+     {"*","*","  ","  ","  "," *","  ","  ","  "," *"},
+     {"*","*"," *"," *","  "," *","  ","  ","  "," *"},
+     {"*","*","  ","  ","  ","  ","  ","  ","  "," *"},
+     {"*","*"," *"," *"," *"," *"," *"," *"," *"," *"}};
+    System.out.println("  1"+" 2"+" 3"+" 4"+" 5"+" 6"+" 7"+" 8"+" 9");
+    for(int i=1;i<10;i++){
+      System.out.print(i+" ");
+      for(int j=1;j<10;j++){
+        System.out.print(maze[i][j]);
+      }
+      System.out.println();
+    }
+    System.out.println();
+    initialMazePosition(maze);
+  }
+  
+  //Asking for the users initial row and column position
+  public void initialMazePosition(String[][] maze){
+    System.out.println("What row would you like to start at?");
+    positionX = input.nextInt();
+    //Ensures that the user cannot input themselves into a wall
+    while(positionX == 1 || positionX == 9){
+      System.out.println("You're starting in a wall. Please reenter another value.");
+      positionX = input.nextInt();
+    }
+    System.out.println("What column would you like to start at?");
+    positionY = input.nextInt();
+    //Ensures that the user cannot input themselves into a wall
+    while(positionY == 1 || positionY == 9){
+      System.out.println("You're starting in a wall. Please reenter another value.");
+      positionY = input.nextInt();
+    }
+    /*If the user's coordinates are in a wall, it will ask the player 
+     * to reenter their coordinates until the coordinates are not a wall*/
+   if(maze[positionX][positionY].equals(wall)){
+      System.out.println("Reenter your rows and columns");
+      initialMazePosition(maze);
+   }
+   //Declares and displays the initial position of the player.
+   maze[positionX][positionY] = initialPosition;
+   System.out.println("  1"+" 2"+" 3"+" 4"+" 5"+" 6"+" 7"+" 8"+" 9");
+    for(int i=1;i<10;i++){
+      System.out.print(i+" ");
+      for(int j=1;j<10;j++){
+        System.out.print(maze[i][j]);
+      }
+      System.out.println();
+    }
+    System.out.println();
+   mazeSolving(maze, positionX, positionY);
+  }
+  
+  public void mazeSolving(String[][] maze, int positionX, int positionY){
+    //Condition for the maze solving to start
+    if(check==false){
+      //If the [x][y] isn't equal to the exit, then it will continue to run
+      if(positionX != exitX || positionY != exitY){
+        if(maze[positionX][positionY-1].equals(space)){
+          //If the position in front of it is not the initial position, it will print a path marker
+          if(!maze[positionX][positionY-1].equals(initialPosition)){
+            maze[positionX][positionY-1] = initialPosition;
+            maze[positionX][positionY] = path;
+          }
+          //Moves up
+          positionY--;
+        }
+        else if(maze[positionX+1][positionY].equals(space)){
+          //If the position in front of it is not the initial position, it will print a path marker
+          if(!maze[positionX+1][positionY].equals(initialPosition)){
+            maze[positionX+1][positionY] = initialPosition;
+            maze[positionX][positionY] = path;
+          }
+          //Moves right
+          positionX++;
+        }
+        else if(maze[positionX][positionY+1].equals(space)){
+          if(!maze[positionX][positionY+1].equals(initialPosition)){
+            maze[positionX][positionY+1] = initialPosition;
+            maze[positionX][positionY] = path;
+          }
+          //Moves down
+          positionY++;
+        }
+        else if(maze[positionX-1][positionY].equals(space)){
+          //If the position in front of it is not the initial position, it will print a path marker
+          if(!maze[positionX-1][positionY].equals(initialPosition)){
+            maze[positionX-1][positionY] = initialPosition;
+            maze[positionX][positionY] = path;
+          }
+          //Moves left
+          positionX--;
+        }
+        //Ensures back tracking by checking if there is not a space in front of the player tracker
+        else if(!maze[positionX][positionY-1].equals(space) && !maze[positionX][positionY+1].equals(space)
+                  && !maze[positionX-1][positionY].equals(space) && !maze[positionX+1][positionY].equals(space)){
+          //Checks in the up direction for a wall or backtracker
+          if(maze[positionX][positionY-1].equals(path)){ 
+            maze[positionX][positionY-1] = initialPosition;
+            maze[positionX][positionY] = backTracker;
+            //Moves up
+            positionY--;
+          }
+             else if(maze[positionX+1][positionY].equals(path)){
+               //Checks to the right for a wall or backtracker
+               maze[positionX+1][positionY] = initialPosition;
+               maze[positionX][positionY] = backTracker;
+               //Moves right
+               positionX++;
+             }
+             else if(maze[positionX][positionY+1].equals(path)){
+               //Checks in the downward direction for a wall or backtracker
+               maze[positionX][positionY+1] = initialPosition;
+               maze[positionX][positionY] = backTracker;
+               //Moves down
+            positionY++;
+             }
+             else if(maze[positionX-1][positionY].equals(path)){
+               //Checks to the left for a wall or backtracker
+               maze[positionX-1][positionY] = initialPosition;
+               maze[positionX][positionY] = backTracker;
+               //Moves down
+               positionX--;
+             }
+             
+      }
+      //Updates the maze as it runs with recursion
+      System.out.println("  1"+" 2"+" 3"+" 4"+" 5"+" 6"+" 7"+" 8"+" 9");
+      for(int i=1;i<10;i++){
+        System.out.print(i+" ");
+        for(int j=1;j<10;j++){
+              System.out.print(maze[i][j]);
+        }
+        System.out.println();
+      }
+      System.out.println();
+      mazeSolving(maze, positionX, positionY);
+      
+    }
+      //If [x][y] is equal to the exit, it will complete the recursion
+      else{
+        if(positionX == exitX && positionY == exitY){
+          //Changes check to true, stopping the if-statement
+          check = true;
+          System.out.println("You have solved the maze!");
+          System.out.println("\n----------Legend----------"+
+                             "\nYour tracker: "+initialPosition+
+                             "\nPath Taken: "+path+
+                             "\nBack Tracking Path: "+backTracker);
+          }
+        //If it isn't complete, it will run the program again
+        else{
+           mazeSolving(maze, positionX, positionY);
+        }
+      }
+    }
+  }
+  
+  //Method that displays the entire program
+  public String display(){
+    createMaze();
+    return "";
+  }
+}
+        
+        
+        
+    
